@@ -6,9 +6,9 @@ in order from least to most modified.
 
 ## Stage 0: Raw Data
 
-The raw data (`raw.csv`) is a dump of collected responses from the eletronic
-data capture (EDC) platform REDCap. Each row of the raw data represents a user
-response for a single event. The survey consisted of two events:
+The raw data is a dump of collected responses from the eletronic data capture
+(EDC) platform REDCap. Each row of the raw data represents a user response for
+a single event. The survey consisted of two events:
 
 1. Gathering information on the presence of behavior problems for up to 5 dogs.
 2. Gathering information on the pursued paths of treatment, if any, for the dogs
@@ -22,3 +22,17 @@ table:
 | owner-1  | event-1  | dog-data | dog-data | dog-data | dog-data | dog-data |
 | owner-1  | event-2  | dog-data | dog-data | dog-data | dog-data | dog-data |
 | owner-2  | event-1  | dog-data | dog-data | dog-data | dog-data | dog-data |
+
+## Stage 1: Structured Data
+
+The structured data is a restructuring of the raw data for ease of analysis. In
+its new form, the layout of the data can be summarized with the following table:
+
+| owner-id | dog-id | event-1    | event-2    |
+| -------- | ------ | ---------- | ---------- |
+| owner-1  | dog-1  | event-data | event-data |
+| owner-1  | dog-2  | event-data | event-data |
+| owner-2  | dog-1  | event-data | event-data |
+
+Each row represents a complete entry (i.e., both event 1 and event 2 responses)
+for a single dog. Incomplete entries were dropped from the data set.
