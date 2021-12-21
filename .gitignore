@@ -1,3 +1,18 @@
-# Python: Ignore virtual environments.
+### General ###
+
+# Log files
+*.log
+
+### Python ###
+
+# Virtual environments
+.env/
+env/
 .venv/
 venv/
+ENV/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
