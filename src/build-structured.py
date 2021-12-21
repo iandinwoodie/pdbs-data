@@ -10,7 +10,7 @@ def main():
     if not raw_data_path.exists():
         raise FileNotFoundError(f"{raw_data_path} does not exist.")
     df = process_raw_data(raw_data_path)
-    assert df.shape == (5019, 493)
+    assert df.shape == (8378, 496)
     structured_data_path = data_dir / "pdbs-data-1-structured.csv"
     df.to_csv(structured_data_path, index=False)
     print(f"Structured data saved to {structured_data_path}.")
@@ -31,44 +31,43 @@ def process_raw_data(raw_data_path):
     # to create a new link between owners and dogs. We introduce a new owner_id
     # column to accomplish this.
     id_dict = generate_owner_id_dict(df_owner)
-    assert len(id_dict) == 3200
+    assert len(id_dict) == 3198
     # We then apply the mapping to the two dataframes to be linked.
     df_owner = add_owner_id_col(id_dict, df_owner)
     df_dog = add_owner_id_col(id_dict, df_dog)
     # Now we can drop duplicate owner and dog entries, keeping the most recent
     # submission.
     df_owner = df_owner.drop_duplicates(subset=["owner_id"], keep="last")
-    df_owner = df_owner.drop(["record_id"], axis=1)
+    df_owner = df_owner.drop(columns=["record_id"]) # Drop due to redundancy.
     df_dog = df_dog.drop_duplicates(subset=["owner_id", "dog_name"], keep="last")
-    return pd.merge(df_dog, df_owner, on="owner_id")
+    return pd.merge(df_owner, df_dog, on="owner_id")
 
 
 def create_owner_dataframe(frame):
-    assert frame.shape == (5115, 2443)
     df = frame.loc[:, "record_id":"phase_1_welcome_complete"]
-    df = df.drop(["redcap_event_name", "phase_1_test"], axis=1)
-    df = df.dropna(subset=["email"])  # emails were required
+    # Retain information about owners that actually completed the initial owner
+    # (i.e., registration) survey.
+    df = df.loc[df['phase_1_welcome_complete'] == 2]
     df.columns = df.columns.str.replace("___", "_")
+    assert df.shape == (3308, 11)
     return df
 
 
 def create_dog_dataframe(frame):
-    assert frame.shape == (5115, 2443)
-
     def create_event_1_slices(frame):
         id_ = ["record_id"]
         cols = id_ + list(frame.loc[:, "dog_name_1a":"phase_1e_complete"])
         df = frame.query("redcap_event_name == 'event_1_arm_1'")[cols]
+        # Drop the repeat column since they were for control flow logic only.
         df = df[df.columns.drop(list(df.filter(regex=r"phase_1_repeat_1[a-e]")))]
         slices = []
         beg = "dog_name_1{}"
         end = "phase_1{}_complete"
         for i in ["a", "b", "c", "d", "e"]:
             s = df[id_ + list(df.loc[:, beg.format(i) : end.format(i)])]
+            s.columns = s.columns.str.replace(r"phase_1[a-e]_complete", "phase_1_complete", regex=True)
             s.columns = s.columns.str.replace(r"_1[a-e]", "", regex=True)
             s.columns = s.columns.str.replace("___", "_")
-            s = s.query("phase_complete == 2")
-            s = s.drop(["phase_complete"], axis=1)
             slices.append(s)
         return slices
 
@@ -81,20 +80,21 @@ def create_dog_dataframe(frame):
         end = "phase_2{}_complete"
         for i in ["a", "b", "c", "d", "e"]:
             s = df[id_ + list(df.loc[:, beg.format(i) : end.format(i)])]
+            s.columns = s.columns.str.replace(r"phase_2[a-e]_complete", "phase_2_complete", regex=True)
             s.columns = s.columns.str.replace(r"_2[a-e]", "", regex=True)
             s.columns = s.columns.str.replace("___", "_")
             slices.append(s)
         return slices
 
     e1_slices = create_event_1_slices(frame)
-    assert [x.shape[0] for x in e1_slices] == [3027, 1375, 442, 153, 60]
+    assert [x.shape[0] for x in e1_slices] == [3392, 3392, 3392, 3392, 3392]
     e2_slices = create_event_2_slices(frame)
     assert [x.shape[0] for x in e2_slices] == [1723, 1723, 1723, 1723, 1723]
     slices = []
     for i in range(len(e1_slices)):
         s = pd.merge(e1_slices[i], e2_slices[i], on="record_id", how="left")
         slices.append(s)
-    assert [x.shape[0] for x in slices] == [3027, 1375, 442, 153, 60]
+    assert [x.shape[0] for x in slices] == [3392, 3392, 3392, 3392, 3392]
     return pd.concat(slices)
 
 
