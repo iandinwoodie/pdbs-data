@@ -3,6 +3,9 @@
 # Log files
 *.log
 
+# macOS Finder artifacts
+.DS_Store
+
 ### Python ###
 
 # Virtual environments
