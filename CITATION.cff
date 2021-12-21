@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+type: dataset
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Dinwoodie"
+  given-names: "Ian R."
+  orcid: "https://orcid.org/0000-0002-3841-2970"
+- family-names: "Zotolla"
+  given-names: "Vivian"
+- family-names: "Dodman"
+  given-names: "Nicholas H."
+  orcid: "https://orcid.org/0000-0001-9742-3656"
+title: "Owner-Reported Canine Behavior Problems, Countermeasures, and Improvement Ratings, World: 2017-2018"
+version: 1.0.0
+date-released: 2021-12-21
+url: "https://github.com/iandinwoodie/pdbs-data"
