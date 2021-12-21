@@ -1,0 +1,3 @@
+# Python: Ignore virtual environments.
+.venv/
+venv/
