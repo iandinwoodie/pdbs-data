@@ -5,7 +5,7 @@
 </p>
 
 <p align="left">
-    <a href="https://github.com/badges/shields/graphs/contributors" alt="Contributors">
+    <a href="LICENSE" alt="License">
         <img src="https://img.shields.io/github/license/iandinwoodie/pdbs-data" /></a>
 </p>
 
