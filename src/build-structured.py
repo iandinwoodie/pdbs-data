@@ -6,12 +6,12 @@ import pandas as pd
 def main():
     project_dir = pathlib.Path(__file__).parent.parent
     data_dir = project_dir / "data"
-    raw_data_path = data_dir / "pdbs-data-0-raw.csv"
+    raw_data_path = data_dir / "raw" / "raw.csv"
     if not raw_data_path.exists():
         raise FileNotFoundError(f"{raw_data_path} does not exist.")
     df = process_raw_data(raw_data_path)
     assert df.shape == (8378, 496)
-    structured_data_path = data_dir / "pdbs-data-1-structured.csv"
+    structured_data_path = data_dir / "intermediate" / "structured.csv"
     df.to_csv(structured_data_path, index=False)
     print(f"Structured data saved to {structured_data_path}.")
 
