@@ -1,7 +1,7 @@
 <p align="center">
-  <img src="assets/images/pdbs-data-card.png"
-      alt="Owner-Reported Canine Behavior Problems, Countermeasures, and Improvement Ratings, Worldwide: 2017-2018"
-      title="pdbs-data-card" />
+  <img src="assets/images/repo-card.png"
+      alt="Owner-Reported Canine Behavior Problems, Countermeasures, and Improvement Ratings, World: 2017-2018"
+      title="pdbs-data" />
 </p>
 
 <p align="left">
