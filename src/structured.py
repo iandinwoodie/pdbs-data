@@ -16,3 +16,12 @@ def add_owner_id_col(frame, owner_id_dict):
     if frame["owner_id"].isnull().values.any():
         raise RuntimeError("owner_id was not fully populated")
     return frame
+
+
+def extract_owner_dataframe(df):
+    """
+    Extract the owner dataframe from the main dataframe.
+    """
+    df = df.loc[:, "record_id":"phase_1_welcome_complete"]
+    df.columns = df.columns.str.replace("___", "_")
+    return df

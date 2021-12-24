@@ -22,7 +22,8 @@ def process_raw_data(raw_data_path):
     assert df.shape == (5115, 2443)
     df = df.apply(pd.to_numeric, errors="ignore")
     # Create two derived dataframes: one for owners and one for dogs.
-    df_owner = create_owner_dataframe(df)
+    df_owner = structured.extract_owner_dataframe(df)
+    assert df_owner.shape == (5115, 11)
     df_dog = create_dog_dataframe(df)
     # Owners were only allowed to input data for 5 dogs at a time (due to
     # constraints imposed by the version of REDCap being utilized to serve the
@@ -46,13 +47,6 @@ def process_raw_data(raw_data_path):
     df_owner = df_owner.drop(columns=["record_id"])  # Drop due to redundancy.
     df_dog = df_dog.drop_duplicates(subset=["owner_id", "dog_name"], keep="last")
     return pd.merge(df_owner, df_dog, on="owner_id")
-
-
-def create_owner_dataframe(frame):
-    df = frame.loc[:, "record_id":"phase_1_welcome_complete"]
-    df.columns = df.columns.str.replace("___", "_")
-    assert df.shape == (5115, 11)
-    return df
 
 
 def create_dog_dataframe(frame):
