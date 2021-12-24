@@ -1,6 +1,7 @@
 import pathlib
-
 import pandas as pd
+
+import structured
 
 
 def main():
@@ -31,10 +32,14 @@ def process_raw_data(raw_data_path):
     # to create a new link between owners and dogs. We introduce a new owner_id
     # column to accomplish this.
     id_dict = generate_owner_id_dict(df_owner)
-    assert len(id_dict) == 3198
+    # assert len(id_dict) == 3198
     # We then apply the mapping to the two dataframes to be linked.
-    df_owner = add_owner_id_col(id_dict, df_owner)
-    df_dog = add_owner_id_col(id_dict, df_dog)
+    df_owner = structured.add_owner_id_col(df_owner, id_dict)
+    df_dog = structured.add_owner_id_col(df_dog, id_dict)
+    # Retain information about owners that actually completed the initial owner
+    # (i.e., registration) survey.
+    df_owner = df_owner.loc[df_owner["phase_1_welcome_complete"] == 2]
+    assert df_owner.shape == (3308, 12)
     # Now we can drop duplicate owner and dog entries, keeping the most recent
     # submission.
     df_owner = df_owner.drop_duplicates(subset=["owner_id"], keep="last")
@@ -45,11 +50,8 @@ def process_raw_data(raw_data_path):
 
 def create_owner_dataframe(frame):
     df = frame.loc[:, "record_id":"phase_1_welcome_complete"]
-    # Retain information about owners that actually completed the initial owner
-    # (i.e., registration) survey.
-    df = df.loc[df["phase_1_welcome_complete"] == 2]
     df.columns = df.columns.str.replace("___", "_")
-    assert df.shape == (3308, 11)
+    assert df.shape == (5115, 11)
     return df
 
 
@@ -126,15 +128,6 @@ def generate_owner_id_dict(frame):
         record_ids.append(owner.record_id)
         owner_id_dict[owner_id] = record_ids
     return owner_id_dict
-
-
-def add_owner_id_col(owner_id_dict, frame):
-    inv_dict = {}  # key = record_id, value = owner_id
-    for key, vals in owner_id_dict.items():
-        for val in vals:
-            inv_dict[val] = key
-    frame["owner_id"] = frame["record_id"].map(inv_dict)
-    return frame
 
 
 if __name__ == "__main__":

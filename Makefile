@@ -1,5 +1,10 @@
 .DEFAULT_GOAL := help
 
+.PHONY: data
+data: ## Generate the processed data file for this project.
+	@echo "Generating processed data ..."
+	python src/build-structured.py
+
 .PHONY: test
 test: ## Perform self tests on the program this makefile builds.
 	pytest
