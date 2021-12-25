@@ -22,7 +22,7 @@ def process_raw_data(raw_data_path):
     assert df.shape == (5115, 2443)
     df = df.apply(pd.to_numeric, errors="ignore")
     # Create two derived dataframes: one for owners and one for dogs.
-    df_owner = structured.extract_owner_dataframe(df)
+    df_owner = structured.extract_owner_data_frame(df)
     assert df_owner.shape == (5115, 11)
     df_dog = create_dog_dataframe(df)
     # Owners were only allowed to input data for 5 dogs at a time (due to
@@ -35,8 +35,8 @@ def process_raw_data(raw_data_path):
     id_dict = generate_owner_id_dict(df_owner)
     # assert len(id_dict) == 3198
     # We then apply the mapping to the two dataframes to be linked.
-    df_owner = structured.add_owner_id_col(df_owner, id_dict)
-    df_dog = structured.add_owner_id_col(df_dog, id_dict)
+    structured.add_owner_id_col(df_owner, id_dict)
+    structured.add_owner_id_col(df_dog, id_dict)
     # Retain information about owners that actually completed the initial owner
     # (i.e., registration) survey.
     df_owner = df_owner.loc[df_owner["phase_1_welcome_complete"] == 2]
