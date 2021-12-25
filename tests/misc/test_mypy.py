@@ -9,8 +9,8 @@ import pytest
 project_dir = pathlib.Path(__file__).parent.parent.parent
 
 
-def test_source_files_pass_black_check():
-    """Properly formatted source files should pass black."""
-    cmd = ["python", "-m", "black", "--check", str(project_dir)]
+def test_source_files_pass_mypy_check():
+    """Properly structured source files should pass mypy."""
+    cmd = ["python", "-m", "mypy", "--ignore-missing-imports", str(project_dir)]
     p = subprocess.run(cmd, capture_output=True)
     assert p.returncode == 0
