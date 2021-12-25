@@ -1,8 +1,10 @@
+"""
+Module for structring the data into an intuitive format.
+"""
 # Standard library modules.
 import typing
 
 # Third party modules.
-import numpy as np
 import pandas as pd
 
 
@@ -15,13 +17,13 @@ def add_owner_id_col(
     """
     if not owner_id_dict:
         raise RuntimeError("owner_id_dict argument is empty")
-    elif df.empty:
+    if df.empty:
         raise RuntimeError("df argument is empty")
-    elif not "record_id" in df.columns:
+    if not "record_id" in df.columns:
         raise RuntimeError("df argument missing record_id column")
-    elif not df["record_id"].dtype == int:
+    if not df["record_id"].dtype == int:
         raise RuntimeError("df record_id column must be int")
-    elif "owner_id" in df.columns:
+    if "owner_id" in df.columns:
         raise RuntimeError("df argument already has owner_id column")
     df["owner_id"] = -1
     record_ids_from_df = set(df["record_id"].to_list())
@@ -31,7 +33,7 @@ def add_owner_id_col(
         df.loc[df["record_id"].isin(vals), "owner_id"] = int(key)
     if len(record_ids_from_df - record_ids_from_owner_id_dict) > 0:
         raise RuntimeError("owner_id_dict argument missing entries")
-    elif len(record_ids_from_owner_id_dict - record_ids_from_df) > 0:
+    if len(record_ids_from_owner_id_dict - record_ids_from_df) > 0:
         raise RuntimeError("df argument missing record_id entries")
 
 

@@ -1,9 +1,11 @@
+"""
+Tests for the raw data set file.
+"""
 # Standard library modules.
 import pathlib
 import hashlib
 
 # Third party modules.
-import pytest
 import pandas as pd
 
 

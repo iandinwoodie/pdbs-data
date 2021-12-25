@@ -1,15 +1,12 @@
+"""
+Unit tests for the structured module.
+"""
 # Third party modules.
 import pytest
 import pandas as pd
 
 # Local modules.
 from src import structured
-
-
-def test_add_owner_id_col__returns_none():
-    """Returns none to indicate that the data frame argument was modified."""
-    rv = structured.add_owner_id_col(pd.DataFrame({"record_id": [1]}), {100: [1]})
-    assert rv is None
 
 
 def test_add_owner_id_col__dict_arg_empty_throws():

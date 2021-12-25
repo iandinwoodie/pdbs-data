@@ -1,3 +1,6 @@
+"""
+Main script resposible for creating the structured data set.
+"""
 # Standard library modules.
 import pathlib
 
@@ -9,6 +12,9 @@ import structured
 
 
 def main() -> None:
+    """
+    Generate the structured data set.
+    """
     project_dir = pathlib.Path(__file__).parent.parent
     data_dir = project_dir / "data"
     raw_data_path = data_dir / "raw" / "raw.csv"
@@ -22,9 +28,12 @@ def main() -> None:
 
 
 def process_raw_data(raw_data_path: pathlib.Path) -> pd.DataFrame:
+    """
+    Process the raw data file.
+    """
     df = pd.read_csv(raw_data_path, dtype=object, low_memory=False)
     assert df.shape == (5115, 2443)
-    df = df.apply(pd.to_numeric, errors="ignore")
+    df = df.apply(pd.to_numeric, errors="ignore")  # pylint: disable=no-member
     # Create two derived dataframes: one for owners and one for dogs.
     df_owner = structured.extract_owner_data_frame(df)
     assert df_owner.shape == (5115, 11)
@@ -54,7 +63,14 @@ def process_raw_data(raw_data_path: pathlib.Path) -> pd.DataFrame:
 
 
 def create_dog_dataframe(frame):
+    """
+    Extract the dog data frame from the raw data frame.
+    """
+
     def create_event_1_slices(frame):
+        """
+        Create slices for the first questionnaire event (i.e., demographics).
+        """
         id_ = ["record_id"]
         cols = id_ + list(frame.loc[:, "dog_name_1a":"phase_1e_complete"])
         df = frame.query("redcap_event_name == 'event_1_arm_1'")[cols]
@@ -64,16 +80,21 @@ def create_dog_dataframe(frame):
         beg = "dog_name_1{}"
         end = "phase_1{}_complete"
         for i in ["a", "b", "c", "d", "e"]:
-            s = df[id_ + list(df.loc[:, beg.format(i) : end.format(i)])]
-            s.columns = s.columns.str.replace(
+            new_slices = df[id_ + list(df.loc[:, beg.format(i) : end.format(i)])]
+            new_slices.columns = new_slices.columns.str.replace(
                 r"phase_1[a-e]_complete", "phase_1_complete", regex=True
             )
-            s.columns = s.columns.str.replace(r"_1[a-e]", "", regex=True)
-            s.columns = s.columns.str.replace("___", "_")
-            slices.append(s)
+            new_slices.columns = new_slices.columns.str.replace(
+                r"_1[a-e]", "", regex=True
+            )
+            new_slices.columns = new_slices.columns.str.replace("___", "_")
+            slices.append(new_slices)
         return slices
 
     def create_event_2_slices(frame):
+        """
+        Create slices for the second questionnaire event (i.e, treatment info).
+        """
         id_ = ["record_id"]
         cols = id_ + list(frame.loc[:, "prof_help_2a":"phase_2e_complete"])
         df = frame.query("redcap_event_name == 'event_2_arm_1'")[cols]
@@ -81,13 +102,15 @@ def create_dog_dataframe(frame):
         beg = "prof_help_2{}"
         end = "phase_2{}_complete"
         for i in ["a", "b", "c", "d", "e"]:
-            s = df[id_ + list(df.loc[:, beg.format(i) : end.format(i)])]
-            s.columns = s.columns.str.replace(
+            new_slices = df[id_ + list(df.loc[:, beg.format(i) : end.format(i)])]
+            new_slices.columns = new_slices.columns.str.replace(
                 r"phase_2[a-e]_complete", "phase_2_complete", regex=True
             )
-            s.columns = s.columns.str.replace(r"_2[a-e]", "", regex=True)
-            s.columns = s.columns.str.replace("___", "_")
-            slices.append(s)
+            new_slices.columns = new_slices.columns.str.replace(
+                r"_2[a-e]", "", regex=True
+            )
+            new_slices.columns = new_slices.columns.str.replace("___", "_")
+            slices.append(new_slices)
         return slices
 
     e1_slices = create_event_1_slices(frame)
@@ -95,21 +118,25 @@ def create_dog_dataframe(frame):
     e2_slices = create_event_2_slices(frame)
     assert [x.shape[0] for x in e2_slices] == [1723, 1723, 1723, 1723, 1723]
     slices = []
-    for i in range(len(e1_slices)):
-        s = pd.merge(e1_slices[i], e2_slices[i], on="record_id", how="left")
-        slices.append(s)
+    slice_cnt = len(e1_slices)
+    for i in range(slice_cnt):
+        new_slices = pd.merge(e1_slices[i], e2_slices[i], on="record_id", how="left")
+        slices.append(new_slices)
     assert [x.shape[0] for x in slices] == [3392, 3392, 3392, 3392, 3392]
     return pd.concat(slices)
 
 
 def generate_owner_id_dict(frame):
+    """
+    Produce a dictionary mapping owner_id to record_id.
+    """
     email_dict = {}  # key = email, value = owner_id
     owner_id_dict = {}  # key = owner_id, value = [record_id, ...]
     next_owner_id = 1
-    for index, owner in frame.iterrows():
+    for _, owner in frame.iterrows():
         email = owner.email
         owner_id = None
-        if not email in email_dict.keys():
+        if not email in email_dict:
             owner_id = next_owner_id
             next_owner_id += 1
             email_dict[email] = owner_id
@@ -117,7 +144,7 @@ def generate_owner_id_dict(frame):
             owner_id = email_dict[email]
         assert owner_id  # sanity check
         record_ids = None
-        if not owner_id in owner_id_dict.keys():
+        if owner_id not in owner_id_dict:
             owner_id_dict[owner_id] = []
             record_ids = []
         else:

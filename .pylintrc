@@ -1,0 +1,7 @@
+[MASTER]
+# Prevent E0401 when importing local modules from the src directory.
+init-hook='import sys; sys.path.append("src")'
+
+[BASIC]
+# Good variable names which should always be accepted, separated by a comma.
+good-names=p,df,rv,i
