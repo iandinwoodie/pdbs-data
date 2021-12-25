@@ -1,10 +1,14 @@
+# Standard library modules.
 import pathlib
+
+# Third party modules.
 import pandas as pd
 
+# Local modules.
 import structured
 
 
-def main():
+def main() -> None:
     project_dir = pathlib.Path(__file__).parent.parent
     data_dir = project_dir / "data"
     raw_data_path = data_dir / "raw" / "raw.csv"
@@ -17,7 +21,7 @@ def main():
     print(f"Structured data saved to {structured_data_path}.")
 
 
-def process_raw_data(raw_data_path):
+def process_raw_data(raw_data_path: pathlib.Path) -> pd.DataFrame:
     df = pd.read_csv(raw_data_path, dtype=object, low_memory=False)
     assert df.shape == (5115, 2443)
     df = df.apply(pd.to_numeric, errors="ignore")

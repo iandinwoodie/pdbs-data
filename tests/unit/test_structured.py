@@ -1,6 +1,8 @@
+# Third party modules.
 import pytest
 import pandas as pd
 
+# Local modules.
 from src import structured
 
 
@@ -15,27 +17,6 @@ def test_add_owner_id_col__dict_arg_empty_throws():
     with pytest.raises(RuntimeError) as excinfo:
         structured.add_owner_id_col(pd.DataFrame(), {})
     assert "owner_id_dict argument is empty" in str(excinfo.value)
-
-
-def test_add_owner_id_col__dict_arg_invalid_owner_id_type_throws():
-    """Owner ID dictionary argument must have int owner IDs."""
-    with pytest.raises(RuntimeError) as excinfo:
-        structured.add_owner_id_col(pd.DataFrame(), {"100": [1]})
-    assert "owner_id_dict keys must be int" in str(excinfo.value)
-
-
-def test_add_owner_id_col__dict_arg_invalid_record_id_container_type_throws():
-    """Owner ID dictionary argument record IDs must be in list."""
-    with pytest.raises(RuntimeError) as excinfo:
-        structured.add_owner_id_col(pd.DataFrame(), {100: {1}})
-    assert "owner_id_dict values must be list of int" in str(excinfo.value)
-
-
-def test_add_owner_id_col__dict_arg_invalid_record_id_element_type_throws():
-    """Owner ID dictionary argument record IDs must be int."""
-    with pytest.raises(RuntimeError) as excinfo:
-        structured.add_owner_id_col(pd.DataFrame(), {100: ["1"]})
-    assert "owner_id_dict values must be list of int" in str(excinfo.value)
 
 
 def test_add_owner_id_col__dict_arg_missing_entry_throws():
