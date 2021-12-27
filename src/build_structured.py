@@ -11,26 +11,8 @@ import pandas as pd
 import structured
 
 
-def main() -> None:
-    """
-    Generate the structured data set.
-    """
-    project_dir = pathlib.Path(__file__).parent.parent
-    data_dir = project_dir / "data"
-    raw_data_path = data_dir / "raw" / "raw.csv"
-    if not raw_data_path.exists():
-        raise FileNotFoundError(f"{raw_data_path} does not exist.")
-    df = process_raw_data(raw_data_path)
-    assert df.shape == (8378, 496)
-    structured_data_path = data_dir / "intermediate" / "structured.csv"
-    df.to_csv(structured_data_path, index=False)
-    print(f"Structured data saved to {structured_data_path}.")
-
-
 def process_raw_data(raw_data_path: pathlib.Path) -> pd.DataFrame:
-    """
-    Process the raw data file.
-    """
+    """Process the raw data file."""
     df = pd.read_csv(raw_data_path, dtype=object, low_memory=False)
     assert df.shape == (5115, 2443)
     df = df.apply(pd.to_numeric, errors="ignore")  # pylint: disable=no-member
@@ -153,7 +135,3 @@ def generate_owner_id_dict(frame):
         record_ids.append(owner.record_id)
         owner_id_dict[owner_id] = record_ids
     return owner_id_dict
-
-
-if __name__ == "__main__":
-    main()

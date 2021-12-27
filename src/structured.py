@@ -30,7 +30,7 @@ def add_owner_id_col(
     record_ids_from_owner_id_dict = set()
     for key, vals in owner_id_dict.items():
         record_ids_from_owner_id_dict.update(vals)
-        df.loc[df["record_id"].isin(vals), "owner_id"] = int(key)
+        df.loc[df["record_id"].isin(vals), "owner_id"] = key
     if len(record_ids_from_df - record_ids_from_owner_id_dict) > 0:
         raise RuntimeError("owner_id_dict argument missing entries")
     if len(record_ids_from_owner_id_dict - record_ids_from_df) > 0:

@@ -2,17 +2,26 @@
 
 .PHONY: data
 data: ## Generate the processed data file for this project.
-	@echo "Generating processed data ..."
-	python src/build_structured.py
+	@echo "Generating data sets ..."
+	python src/build_data_sets.py
 
 .PHONY: test
-test: ## Perform self tests on the program this makefile builds.
+test: ## Perform available tests on for this project.
 	pytest
 
 .PHONY: clean
 clean: ## Delete all files that are normally created by running make.
 	@find . -type d -name '__pycache__' -exec rm -rf {} +
 	@find . -type f -name '*.py[co]' -exec rm -f {} +
+
+.PHONY: utils
+utils: ## Run the registered utilities on the project.
+	@echo "Running type checker ..."
+	python -m mypy --ignore-missing-imports .
+	@echo "Running linter ..."
+	python -m pylint src tests
+	@echo "Running formatter ..."
+	python -m black .
 
 .PHONY: help
 help:
