@@ -1,11 +1,9 @@
 """
 Main script resposible for creating the project data sets.
 """
-# Standard library modules.
-import pathlib
-
 # Local modules.
 import raw_data
+import settings
 import structured_data
 
 
@@ -13,12 +11,11 @@ def main() -> None:
     """
     Main function from which all data sets are created.
     """
-    project_dir = pathlib.Path(__file__).parent.parent
-    data_dir = project_dir / "data"
+    config = settings.Settings()
 
     # Fetch the raw data.
     print("Loading raw data ... ", end="")
-    df_raw = raw_data.create_data_frame(raw_data.get_path(data_dir))
+    df_raw = raw_data.create_data_frame(config)
     if not raw_data.verify_data_frame(df_raw):
         raise ValueError("Raw data frame is not valid.")
     print("done")
