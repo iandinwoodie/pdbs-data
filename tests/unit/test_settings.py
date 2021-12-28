@@ -20,12 +20,12 @@ def test_settings__project_dir():
 
 def test_settings__raw_data_path():
     """Test the raw_data_path property."""
-    assert settings.Settings().raw_data_path == data_dir / "raw" / "raw_data.csv"
+    assert settings.Settings().raw_data_path == data_dir / "raw" / "raw.csv"
 
 
 def test_settings__structued_data_path():
     """Test the structued_data_path property."""
     assert (
         settings.Settings().structured_data_path
-        == intermediate_data_dir / "structured_data.csv"
+        == intermediate_data_dir / "structured.csv"
     )
