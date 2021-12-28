@@ -12,10 +12,8 @@ class Settings:
         """Initialize the settings."""
         self._project_dir = pathlib.Path(__file__).parent.parent
         self._data_dir = self._project_dir / "data"
-        self._raw_data_path = self._data_dir / "raw" / "raw_data.csv"
-        self._structured_data_path = (
-            self._data_dir / "intermediate" / "structured_data.csv"
-        )
+        self._raw_data_path = self._data_dir / "raw" / "raw.csv"
+        self._structured_data_path = self._data_dir / "intermediate" / "structured.csv"
 
     @property
     def project_dir(self) -> pathlib.Path:
