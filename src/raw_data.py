@@ -15,7 +15,7 @@ def verify_data_frame(df: pd.DataFrame) -> bool:
 
 def create_data_frame(config: settings.Settings) -> pd.DataFrame:
     """Create the raw data frame."""
-    if not config.raw_data_file.exists():
+    if not config.raw_data_path.exists():
         raise ValueError("Raw data file does not exist.")
     return pd.read_csv(config.raw_data_path, dtype=object, low_memory=False).apply(
         pd.to_numeric, errors="ignore"

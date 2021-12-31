@@ -7,7 +7,7 @@ data: ## Generate the processed data file for this project.
 
 .PHONY: test
 test: ## Perform available tests on for this project.
-	pytest
+	PYTHONPATH=./src python -m pytest --cov=src tests
 
 .PHONY: clean
 clean: ## Delete all files that are normally created by running make.
