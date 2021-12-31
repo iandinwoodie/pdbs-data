@@ -5,6 +5,7 @@ Main script resposible for creating the project data sets.
 import raw_data
 import settings
 import structured_data
+import trimmed_data
 
 
 def main() -> None:
@@ -23,7 +24,12 @@ def main() -> None:
     df_structured = structured_data.create_data_frame(df_raw)
     print("done")
 
-    assert df_structured.shape == (25575, 499)
+    # Trim the data set to include only the columns and rows that are useful for
+    # investigation.
+    print("Creating trimmed data ... ", end="")
+    df_trimmed = trimmed_data.create_data_frame(df_structured)
+    print("done")
+    assert df_trimmed.shape == (5057, 490)
 
     ## IRD NOTE: Demographic study
     # df = df_structured
