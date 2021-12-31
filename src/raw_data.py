@@ -8,11 +8,6 @@ import pandas as pd
 import settings
 
 
-def verify_data_frame(df: pd.DataFrame) -> bool:
-    """Verify the raw data frame."""
-    return df.shape == (5115, 2443)
-
-
 def create_data_frame(config: settings.Settings) -> pd.DataFrame:
     """Create the raw data frame."""
     if not config.raw_data_path.exists():

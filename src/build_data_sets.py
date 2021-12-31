@@ -16,16 +16,14 @@ def main() -> None:
     # Fetch the raw data.
     print("Loading raw data ... ", end="")
     df_raw = raw_data.create_data_frame(config)
-    if not raw_data.verify_data_frame(df_raw):
-        raise ValueError("Raw data frame is not valid.")
     print("done")
 
     # Structure the raw data into an intuitive format.
     print("Creating structured data ... ", end="")
     df_structured = structured_data.create_data_frame(df_raw)
-    if not structured_data.verify_data_frame(df_structured):
-        raise ValueError("Structured data frame is not valid.")
     print("done")
+
+    assert df_structured.shape == (25575, 499)
 
     ## IRD NOTE: Demographic study
     # df = df_structured

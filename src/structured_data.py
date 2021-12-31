@@ -1,17 +1,9 @@
 """
 Module for code related to the structured data set.
 """
-# Standard library modules.
-import pathlib
-
 # Third party modules.
 import numpy as np
 import pandas as pd
-
-
-def get_path(data_dir: pathlib.Path) -> pathlib.Path:
-    """Return the path to the structured data set."""
-    return data_dir / "intermediate" / "structured_data.csv"
 
 
 def extract_event_1(df: pd.DataFrame) -> pd.DataFrame:
@@ -166,12 +158,3 @@ def create_data_frame(df: pd.DataFrame) -> pd.DataFrame:
         df_tmp = pd.concat([df_e1, df_e2], axis=1)
         df_struct = pd.concat([df_struct, df_tmp]) if df_struct is not None else df_tmp
     return df_struct
-
-
-def verify_data_frame(df: pd.DataFrame) -> None:
-    """Verify the structured data frame."""
-    return (
-        df.shape == (25575, 499)
-        and df.query("phase_1_complete == 2").shape == (5057, 499)
-        and df.query("phase_2_complete == 2").shape == (2322, 499)
-    )
