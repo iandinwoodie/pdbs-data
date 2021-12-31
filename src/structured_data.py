@@ -155,6 +155,12 @@ def create_data_frame(df: pd.DataFrame) -> pd.DataFrame:
     df_struct = None
     for idx, df_e1 in enumerate(e1_df_list):
         df_e2 = e2_df_list[idx]
-        df_tmp = pd.concat([df_e1, df_e2], axis=1)
+        df_tmp = pd.merge(
+            left=df_e1,
+            right=df_e2,
+            how="left",
+            left_on="record_id",
+            right_on="record_id",
+        )
         df_struct = pd.concat([df_struct, df_tmp]) if df_struct is not None else df_tmp
     return df_struct

@@ -14,24 +14,11 @@ from src import settings
 from src import raw_data
 
 
-# Cache df globally for efficiency.
-DF_CACHED = None
-
-
-def test_create_data_frame__verify_shape():
-    """Verify the shape of the data frame."""
-    global DF_CACHED  # pylint: disable=global-statement
-    if DF_CACHED is None:
-        DF_CACHED = raw_data.create_data_frame(settings.Settings())
-    assert DF_CACHED.shape == (5115, 2443)
-
-
-def test_create_data_frame__verify_content():
-    """Verify the content of the data frame."""
-    global DF_CACHED  # pylint: disable=global-statement
-    if DF_CACHED is None:
-        DF_CACHED = raw_data.create_data_frame(settings.Settings())
-    digest = hashlib.sha1(pd.util.hash_pandas_object(DF_CACHED).values).hexdigest()
+def test_create_data_frame__success():
+    """Verify the shape and contents of the data frame."""
+    df = raw_data.create_data_frame(settings.Settings())
+    assert df.shape == (5115, 2443)
+    digest = hashlib.sha1(pd.util.hash_pandas_object(df).values).hexdigest()
     assert digest == "b8b7eb00f7f51945fe2f75a115b44da53a1f6385"
 
 
