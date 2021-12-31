@@ -19,3 +19,7 @@ ENV/
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Coverage reports
+.coverage
+.coverage.*
