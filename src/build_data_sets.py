@@ -41,7 +41,7 @@ def main() -> None:
     df_refined = pd.read_csv(
         config.intermediate_data_dir / "refined.csv", dtype=object, low_memory=False
     ).apply(pd.to_numeric, errors="ignore")
-    assert df_refined.shape == (5057, 503)
+    assert df_refined.shape == (5057, 506)
     print("done")
 
     # Generate the processed data set,
