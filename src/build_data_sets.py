@@ -22,14 +22,26 @@ def main() -> None:
     # Structure the raw data into an intuitive format.
     print("Creating structured data ... ", end="")
     df_structured = structured_data.create_data_frame(df_raw)
+    df_structured.to_csv(config.structured_data_path, index=False)
     print("done")
 
     # Trim the data set to include only the columns and rows that are useful for
     # investigation.
     print("Creating trimmed data ... ", end="")
     df_trimmed = trimmed_data.create_data_frame(df_structured)
+    df_trimmed.to_csv(config.intermediate_data_dir / "trimmed.csv", index=False)
     print("done")
     assert df_trimmed.shape == (5057, 490)
+
+    # IRD TODO: Generate a readable data set.
+
+    # IRD TODO: Generate a refined data set via OpenRefine.
+
+    # IRD TODO: Append manually cleaned columns.
+
+    # IRD TODO: Handle "other" columns.
+
+    # IRD TODO: Save final processed data set.
 
     ## IRD NOTE: Demographic study
     # df = df_structured
