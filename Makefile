@@ -16,12 +16,12 @@ clean: ## Delete all files that are normally created by running make.
 
 .PHONY: utils
 utils: ## Run the registered utilities on the project.
+	@echo "Running formatter ..."
+	python -m black .
 	@echo "Running type checker ..."
 	python -m mypy --ignore-missing-imports .
 	@echo "Running linter ..."
 	python -m pylint src tests
-	@echo "Running formatter ..."
-	python -m black .
 
 .PHONY: help
 help:
