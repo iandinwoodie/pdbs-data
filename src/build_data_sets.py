@@ -33,26 +33,50 @@ def main() -> None:
     print("Creating trimmed data ... ", end="")
     df_trimmed = trimmed_data.create_data_frame(df_structured)
     df_trimmed.to_csv(config.intermediate_data_dir / "trimmed.csv", index=False)
-    print("done")
     assert df_trimmed.shape == (5057, 490)
+    print("done")
 
+    # Load the refined data set,
+    print("Loading refined data ... ", end="")
     df_refined = pd.read_csv(
         config.intermediate_data_dir / "refined.csv", dtype=object, low_memory=False
     ).apply(pd.to_numeric, errors="ignore")
     assert df_refined.shape == (5057, 503)
+    print("done")
 
-    df_demo = create_demographics_data_frame(df_refined)
-    assert df_demo.shape == (4150, 151)
+    # Generate the processed data set,
+    print("Creating final processed data ... ", end="")
+    df_processed = create_processed_data_frame(df_refined)
+    assert df_processed.shape == (5057, 490)
+    df_processed.to_csv(config.data_dir / "processed" / "processed.csv", index=False)
+    print("done")
 
-    df_treat = create_treatment_data_frame(df_refined)
-    assert df_treat.shape == (2322, 502)
+    # Example of how to filter processed data for demographic analysis.
+    df_demo = create_demographics_data_frame(df_processed)
+    assert df_demo.shape == (4150, 138)
+
+    # Example of how to filter processed data for treatment analysis.
+    df_treat = create_treatment_data_frame(df_processed)
+    assert df_treat.shape == (2322, 489)
 
 
-def create_demographics_data_frame(df_refined: pd.DataFrame) -> pd.DataFrame:
+def create_processed_data_frame(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Create a data frame containing only the processed data.
+    """
+    df_processed = df.copy()
+    dirty_cols = [x[:-8] for x in df_processed.columns if "_refined" in x]
+    for col in dirty_cols:
+        df_processed.drop(col, axis=1, inplace=True)
+        df_processed.rename(columns={f"{col}_refined": col}, inplace=True)
+    return df_processed
+
+
+def create_demographics_data_frame(df: pd.DataFrame) -> pd.DataFrame:
     """
     Create a data frame containing only the demographic data.
     """
-    df_demo = df_refined.copy()
+    df_demo = df.copy()
     # The following is the inclusion criteria.
     df_demo = df_demo.loc[
         (df_demo["question_reason_for_part_3"] == 0)
@@ -63,11 +87,11 @@ def create_demographics_data_frame(df_refined: pd.DataFrame) -> pd.DataFrame:
     return df_demo
 
 
-def create_treatment_data_frame(df_refined: pd.DataFrame) -> pd.DataFrame:
+def create_treatment_data_frame(df: pd.DataFrame) -> pd.DataFrame:
     """
     Create a data frame containing only the treatment data.
     """
-    df_treat = df_refined.copy()
+    df_treat = df.copy()
     # Drop incomplete responses for the second event.
     df_treat = df_treat.loc[df_treat["phase_2_complete"] == 2]
     df_treat = df_treat.drop(["phase_2_complete"], axis=1)
