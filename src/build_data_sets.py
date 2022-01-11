@@ -1,6 +1,9 @@
 """
 Main script resposible for creating the project data sets.
 """
+# Third party modules.
+import pandas as pd
+
 # Local modules.
 import raw_data
 import settings
@@ -33,35 +36,36 @@ def main() -> None:
     print("done")
     assert df_trimmed.shape == (5057, 490)
 
-    # IRD TODO: Generate a readable data set.
+    df_demo = create_demographics_data_frame(df_trimmed)
+    assert df_demo.shape == (4150, 490)
 
-    # IRD TODO: Generate a refined data set via OpenRefine.
+    df_treat = create_treatment_data_frame(df_trimmed)
+    assert df_treat.shape == (2322, 489)
 
-    # IRD TODO: Append manually cleaned columns.
 
-    # IRD TODO: Handle "other" columns.
+def create_demographics_data_frame(df_trimmed: pd.DataFrame) -> pd.DataFrame:
+    """
+    Create a data frame containing only the demographic data.
+    """
+    df_demo = df_trimmed.copy()
+    # The following is the inclusion criteria.
+    df_demo = df_demo.loc[
+        (df_demo["question_reason_for_part_3"] == 0)
+        | ((df_demo["question_reason_for_part_3"] == 1) & (df_demo["q01_main"] != 1))
+    ]
+    # NOTE: All event 2 columns can be dropped for this study.
+    return df_demo
 
-    # IRD TODO: Save final processed data set.
 
-    ## IRD NOTE: Demographic study
-    # df = df_structured
-    ## The following is the inclusion criteria.
-    # df = df.loc[
-    #    (df['question_reason_for_part_3'] == 0)
-    #    | ((df['question_reason_for_part_3'] == 1)
-    #        & (df['q01_main'] != 1))]
-    ## Drop incomplete responses for the first event.
-    # df = df.loc[df['phase_1_complete'] == 2]
-    # df = df.drop(["phase_1_complete"], axis=1)
-    # assert df.shape == (4150, 498)
-    ## NOTE: All event 2 columns can be dropped for this study.
-
-    ## IRD NOTE: Treatment studies
-    # df = df_structured
-    ## Drop incomplete responses for the second event.
-    # df = df.loc[df['phase_2_complete'] == 2]
-    # df = df.drop(["phase_1_complete", "phase_2_complete"], axis=1)
-    # assert df.shape == (2322, 497)
+def create_treatment_data_frame(df_trimmed: pd.DataFrame) -> pd.DataFrame:
+    """
+    Create a data frame containing only the treatment data.
+    """
+    df_treat = df_trimmed.copy()
+    # Drop incomplete responses for the second event.
+    df_treat = df_treat.loc[df_treat["phase_2_complete"] == 2]
+    df_treat = df_treat.drop(["phase_2_complete"], axis=1)
+    return df_treat
 
 
 if __name__ == "__main__":
