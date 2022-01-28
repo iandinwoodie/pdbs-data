@@ -1,6 +1,10 @@
 """
 Main script resposible for creating the project data sets.
 """
+# Standard library modules.
+import pathlib
+import typing
+
 # Third party modules.
 import pandas as pd
 
@@ -46,7 +50,8 @@ def main() -> None:
 
     # Generate the processed data set,
     print("Creating final processed data ... ", end="")
-    df_processed = create_processed_data_frame(df_refined)
+    breeds_dict = build_breed_dict(config.project_dir / "references" / "akc-breeds.txt")
+    df_processed = create_processed_data_frame(df_refined, breeds_dict)
     assert df_processed.shape == (5057, 490)
     df_processed.to_csv(config.data_dir / "processed" / "processed.csv", index=False)
     print("done")
@@ -60,7 +65,22 @@ def main() -> None:
     assert df_treat.shape == (2322, 489)
 
 
-def create_processed_data_frame(df: pd.DataFrame) -> pd.DataFrame:
+def build_breed_dict(breeds_data_path: pathlib.Path) -> typing.Dict[int, str]:
+    """
+    Build a dictionary mapping AKC breed codes to breed names.
+    """
+    breeds_dict = {}
+    with breeds_data_path.open() as f_in:
+        breed_code = 1
+        for line in f_in:
+            breeds_dict[breed_code] = line.strip()
+            breed_code += 1
+    return breeds_dict
+
+
+def create_processed_data_frame(
+    df: pd.DataFrame, breeds_dict: typing.Dict[int, str]
+) -> pd.DataFrame:
     """
     Create a data frame containing only the processed data.
     """
@@ -69,6 +89,7 @@ def create_processed_data_frame(df: pd.DataFrame) -> pd.DataFrame:
     for col in dirty_cols:
         df_processed.drop(col, axis=1, inplace=True)
         df_processed.rename(columns={f"{col}_refined": col}, inplace=True)
+    df_processed["purebred_breed"] = df_processed["purebred_breed"].map(breeds_dict)
     return df_processed
 
 
