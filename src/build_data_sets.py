@@ -56,13 +56,26 @@ def main() -> None:
     df_processed.to_csv(config.data_dir / "processed" / "processed.csv", index=False)
     print("done")
 
+    # Generating the ammended processed data set.
+    # TODO: OpenRefine will need to be patched to support JSON export of single cell
+    # operations to refactor this project so that there is no need to overwrite the
+    # processed data set. Instead, we can apply the breed mapping before the refining
+    # and then the processing can happen in one step.
+    print("Overwrite final processed data with corrections ... ", end="")
+    df_processed = pd.read_csv(
+        config.data_dir / "processed" / "refined-processed.csv", dtype=object, low_memory=False
+    ).apply(pd.to_numeric, errors="ignore")
+    assert df_processed.shape == (5057, 489)
+    df_processed.to_csv(config.data_dir / "processed" / "processed.csv", index=False)
+    print("done")
+
     # Example of how to filter processed data for demographic analysis.
     df_demo = create_demographics_data_frame(df_processed)
-    assert df_demo.shape == (4150, 138)
+    assert df_demo.shape == (4150, 137)
 
     # Example of how to filter processed data for treatment analysis.
     df_treat = create_treatment_data_frame(df_processed)
-    assert df_treat.shape == (2322, 489)
+    assert df_treat.shape == (2322, 488)
 
 
 def build_breed_dict(breeds_data_path: pathlib.Path) -> typing.Dict[int, str]:
