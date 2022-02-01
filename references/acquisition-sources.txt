@@ -1,0 +1,9 @@
+online (rescue)
+online (purchase)
+pet store
+shelter/rescue
+breeder
+self-bred
+friend/family
+found
+other

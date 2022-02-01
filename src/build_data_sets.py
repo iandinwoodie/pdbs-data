@@ -63,8 +63,14 @@ def main() -> None:
     # and then the processing can happen in one step.
     print("Overwrite final processed data with corrections ... ", end="")
     df_processed = pd.read_csv(
-        config.data_dir / "processed" / "refined-processed.csv", dtype=object, low_memory=False
+        config.data_dir / "processed" / "refined-processed.csv",
+        dtype=object,
+        low_memory=False,
     ).apply(pd.to_numeric, errors="ignore")
+    acquisition_dict = build_acquisition_dict(
+        config.project_dir / "references" / "acquisition-sources.txt"
+    )
+    df_processed = create_ammended_processed_data_frame(df_processed, acquisition_dict)
     assert df_processed.shape == (5057, 489)
     df_processed.to_csv(config.data_dir / "processed" / "processed.csv", index=False)
     print("done")
@@ -76,6 +82,34 @@ def main() -> None:
     # Example of how to filter processed data for treatment analysis.
     df_treat = create_treatment_data_frame(df_processed)
     assert df_treat.shape == (2322, 488)
+
+
+def build_acquisition_dict(
+    acquisition_data_path: pathlib.Path,
+) -> typing.Dict[int, str]:
+    """
+    Build a dictionary mapping acquisition codes to acquisition names.
+    """
+    acquisition_dict = {}
+    with acquisition_data_path.open() as f_in:
+        acquisition_code = 1
+        for line in f_in:
+            acquisition_dict[acquisition_code] = line.strip()
+            acquisition_code += 1
+    return acquisition_dict
+
+
+def create_ammended_processed_data_frame(
+    df: pd.DataFrame, acquisition_dict: typing.Dict[int, str]
+) -> pd.DataFrame:
+    """
+    Create a data frame containing only the processed data.
+    """
+    df_processed = df.copy()
+    df_processed["acquisition_source"] = df_processed["acquisition_source"].map(
+        acquisition_dict
+    )
+    return df_processed
 
 
 def build_breed_dict(breeds_data_path: pathlib.Path) -> typing.Dict[int, str]:
