@@ -106,6 +106,10 @@ def create_ammended_processed_data_frame(
     Create a data frame containing only the processed data.
     """
     df_processed = df.copy()
+    dirty_cols = [x[:-8] for x in df_processed.columns if "_refined" in x]
+    for col in dirty_cols:
+        df_processed.drop(col, axis=1, inplace=True)
+        df_processed.rename(columns={f"{col}_refined": col}, inplace=True)
     df_processed["acquisition_source"] = df_processed["acquisition_source"].map(
         acquisition_dict
     )
